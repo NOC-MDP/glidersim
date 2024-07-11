@@ -35,7 +35,8 @@ class Data(object):
         tm = self.data[k_tm]
         opts = dict(title="Results of glidersim model",
                     source="n.a.",
-                    originator="n.a.")
+                    originator="n.a.",
+                    mode='w')
                     
         with ncHereon(fn, **opts) as nc:
             for k in self.data.keys():

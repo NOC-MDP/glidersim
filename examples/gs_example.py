@@ -39,10 +39,10 @@ glider_model.initialise_gliderflightmodel(Cd0=0.20, mg=73.3, Vg=71.542e-3, T1=20
 
 # Set class variables telling what variable names to use in the bathymery file. Depths are interpreted as positive numbers,
 # so, if, as usual, they are written in the NC file as negative, the ELEVATION_FACTOR should be changed accordingly.
-glidersim.environments.GliderData.NC_ELEVATION_NAME='bathymetry'
-glidersim.environments.GliderData.NC_ELEVATION_FACTOR=1
-glidersim.environments.GliderData.NC_LAT_NAME='latc'
-glidersim.environments.GliderData.NC_LON_NAME='lonc'
+glidersim.environments.GliderData.NC_ELEVATION_NAME='elevation'
+glidersim.environments.GliderData.NC_ELEVATION_FACTOR=-1
+glidersim.environments.GliderData.NC_LAT_NAME='lat'
+glidersim.environments.GliderData.NC_LON_NAME='lon'
 
 # Normally not required, but this forces dbdreader to read cac files
 # from a specific directory. In this case from a directory that is
@@ -52,12 +52,12 @@ glidersim.environments.GliderData.DBDREADER_CACHEDIR = '../data/cac'
 if 1:
     # More realistic but takes some time to download current data.
     environment_model = glidersim.environments.DriftModel("comet", download_time=24,
-                                                          gliders_directory='../data', bathymetry_filename='../data/bathymetry.nc')
+                                                          gliders_directory='../data', bathymetry_filename='../gebco_2023_n68.291_s39.5508_w-31.8604_e32.5635.nc')
 else:
     # Just for testing. Current estimates are inaccurate.
     environment_model = glidersim.environments.GliderData("comet",
                                                           gliders_directory='../data',
-                                                          bathymetry_filename='../data/bathymetry.nc')
+                                                          bathymetry_filename='../gebco_2023_n68.291_s39.5508_w-31.8604_e32.5635.nc')
 
 #####################################################################################################
 #
@@ -73,11 +73,12 @@ conf = glidersim.configuration.Config('spiral.mi',
                                       lat_ini=5440.1099,
                                       lon_ini=646.5619,
                                       mission_directory='../data/comet/spiral',
-                                      output='comet-nsb3-spiral.nc',
+                                      output='../comet-nsb3-spiral.nc',
                                       sensor_settings= dict(),
                                       special_settings={'glider.gps.acquiretime':100.,
                                                         'mission_initialisation_time':400,
-                                                        'mission_start':'initial'})
+                                                        'mission_start':'initial',
+                                                        "initial_heading": 190})
 
 #####################################################################################################
 #
@@ -88,7 +89,8 @@ conf = glidersim.configuration.Config('spiral.mi',
 
 GM=glidersim.glidersim.GliderMission(conf,verbose=False,
                                      glider_model=glider_model,
-                                     environment_model = environment_model)
+                                     environment_model = environment_model,
+                                     )
 GM.loadmission(verbose=False)
 GM.run(dt=0.5,CPUcycle=4,maxSimulationTime=1, end_on_surfacing=True)
 
@@ -99,20 +101,21 @@ GM.save()
 
 environment_model.reset() # Forces data to be reloaded.
 
-conf = glidersim.configuration.Config('nsb3.mi',
+conf = glidersim.configuration.Config('mm1.mi',
                                       description="test",
-                                      datestr='20190821',
+                                      datestr='20190809',
                                       timestr='13:54',
-                                      lat_ini=5418.9674,
-                                      lon_ini=724.5902,
-                                      mission_directory='../data/comet/nsb3',
-                                      output='comet-nsb3-nsb3.nc',
-                                      sensor_settings= dict(c_wpt_lat=5418.000,
-                                                            c_wpt_lon= 725.800,
+                                      lat_ini=4842.9,#5418.9674,
+                                      lon_ini=-724.6,#724.5902,
+                                      mission_directory='../data/comet/mm1',
+                                      output='../comet-mm1.nc',
+                                      sensor_settings= dict(c_wpt_lat=4842.00,#5418.000,
+                                                            c_wpt_lon=-730,# 725.800,
                                                             m_water_vx=0.365,
                                                             m_water_vy=-0.099),
                                       special_settings={'glider.gps.acquiretime':100.,
-                                                        'mission_initialisation_time':400},
+                                                        'mission_initialisation_time':400,
+                                                        "initial_heading": 190},
                                       mission_start="pickup")
 
 # Levels of verbosity:
@@ -124,10 +127,10 @@ conf = glidersim.configuration.Config('nsb3.mi',
 # as option to run()        : when True, the simulation progress is displayed.
 
 
-GM=glidersim.glidersim.GliderMission(conf,verbose=False,
+GM=glidersim.glidersim.GliderMission(conf,verbose=True,
                                      glider_model=glider_model,
                                      environment_model = environment_model)
 GM.loadmission(verbose=True) # verbose==True -> shows mission description
-GM.run(dt=0.5,CPUcycle=4,maxSimulationTime=7/24, end_on_surfacing=False, verbose=True)
+GM.run(dt=0.5,CPUcycle=4,maxSimulationTime=12/24, end_on_surfacing=False, verbose=True)
 
 GM.save()

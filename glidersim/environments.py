@@ -48,8 +48,8 @@ class GliderData(object):
     Bathymetry data are from a netcdf file.
     '''
     
-    BATHYMETRY_FILENAME = '/home/lucas/working/git/LMC/data/bathymetry_CV.nc'
-    GLIDERS_DIRECTORY = '/home/lucas/samba/gliders'
+    BATHYMETRY_FILENAME = '/home/thopri/glidersim/gebco_2023_n68.291_s39.5508_w-31.8604_e32.5635.nc'
+    GLIDERS_DIRECTORY = '/home/thopri/glidersim/gliders'
     AGE = 12 # Hours, use CTD data younger than this.
     NC_ELEVATION_NAME = 'elevation'
     NC_ELEVATION_FACTOR = -1
@@ -195,8 +195,8 @@ class GliderData(object):
             self.read_bathymetry()
             self.read_gliderdata(t, lat, lon)
         try:
-            u = float(self.u_fun(t, z))
-            v = float(self.v_fun(t, z))
+            u = float(self.u_fun(t))
+            v = float(self.v_fun(t))
         except NameError:
             u=v=0
         w = 0

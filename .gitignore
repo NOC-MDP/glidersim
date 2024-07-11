@@ -7,3 +7,6 @@ build/
 # Backup files from emacs
 *~
 *#
+.idea
+*.nc
+*.egg-info
