@@ -5,7 +5,7 @@ behavior_name=Goto_list
 	b_arg: list_when_wpt_dist(m) 500
 	b_arg: initial_wpt(enum)     -1 # -1 ==> one after last one achieved
                                                         # -2 ==> closest
-	b_arg: num_waypoints(nodim) 2
+	b_arg: num_waypoints(nodim) 1
 	b_arg: num_legs_to_run(nodim) -1
 <end:b_arg>
 <start:waypoints>
@@ -17,6 +17,5 @@ behavior_name=Goto_list
 #639.200 5434.250
 #713.000 5433.500
 #725.800 5418.00
--730.000 4842.00
--725.000 4822.00
+-710.000 4635.00
 <end:waypoints>

@@ -26,12 +26,12 @@ conf = glidersim.configuration.Config('mm1.mi',                # the mission nam
                                       description="test",       # descriptive text used in the output file
                                       datestr='20190821',       # start date of simulation
                                       timestr='13:54',          # and time
-                                      lat_ini=4842.9,#5418.9674,
-                                      lon_ini=-724.6,#724.5902,     # starting longitude
+                                      lat_ini=4635.00,#5418.9674,
+                                      lon_ini=-710.00,#724.5902,     # starting longitude
                                       mission_directory='data/comet/mm1',  # where the missions and mafiles directories are found
                                       output='comet-mm1.nc',             # name of output file (pickled files (.pck) can also be used
-                                      sensor_settings= dict(c_wpt_lat=4842.00,#5418.000,
-                                                            c_wpt_lon=-730,# 725.800,
+                                      sensor_settings= dict(c_wpt_lat=4635.00,#5418.000,
+                                                            c_wpt_lon=-710.00,# 725.800,
                                                             m_water_vx=0.365,
                                                             m_water_vy=-0.099),
                                       special_settings={'glider.gps.acquiretime':100., # how long the GPS should take to get a reading

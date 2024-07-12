@@ -6,7 +6,7 @@ behavior_name=Surface
 # 6 hr: 21600
 #10 hr: 36000
 # 100 days (effectively never): 8640000 
-b_arg: when_secs(sec)    10800 # How long between surfacings
+b_arg: when_secs(sec)    864000 # How long between surfacings
 b_arg: c_use_bpump(enum)      2
 b_arg: c_bpump_value(X)  1000
 b_arg: c_use_pitch(enum)      3  # servo on pitch
