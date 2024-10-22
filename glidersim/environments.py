@@ -1,3 +1,6 @@
+from mamma_mia.velocity_world import VelocityReality, Extent,Point
+from datetime import datetime
+
 import json
 from urllib import request
 import os
@@ -219,7 +222,6 @@ class GliderData(object):
 
 
 ####################
-
 class DriftModel(GliderData):
     ''' Class to compute environmental data based on the drift-now model.
 
@@ -287,3 +289,76 @@ class DriftModel(GliderData):
     def initialise_velocity_data(self, t, lat, lon):
         ''' dowload drift data for this region and time '''
         self.u_fun, self.v_fun = self.download_drift_data(t, lat, lon)
+
+class VelocityRealityModel(GliderData):
+
+    def __init__(self, glider_name, download_time=12, gliders_directory=None, bathymetry_filename=None):
+        super().__init__(glider_name, gliders_directory, bathymetry_filename)
+        self.download_time = download_time
+
+    def initialise_velocity_data(self, t, lat, lon):
+        # TODO create VR reality here, (will also need Salinity and Temp)
+        split_bathy = self.bathymetry_filename.split("_")
+        # TODO this is pretty hacky need something more robust
+        for part in split_bathy:
+            if part[0] == 'n':
+                max_lat = float(part[1:])
+            if part[0] == 'e':
+                max_lon = float(part[1:-3])
+            if part[0] == 'w':
+                min_lon = float(part[1:])
+            if part[0] == 's':
+                min_lat = float(part[1:])
+        max_depth = 500
+        extent = Extent(max_lat=max_lat,
+                        min_lat=min_lat,
+                        min_lng=min_lon,
+                        max_lng=max_lon,
+                        max_depth=max_depth,
+                        start_dt="2019-07-01T00:00:00",
+                        end_dt="2019-09-01T00:00:00")
+        self.vr = VelocityReality(extent=extent)
+        pass
+
+    def get_data(self, t, lat, lon, z):
+        if self.bathymetry_fun is None:
+            self.initialise_velocity_data(t, lat, lon)
+            self.read_bathymetry()
+            #self.read_gliderdata(t, lat, lon)
+        dt = datetime.fromtimestamp(t)
+        dt_str = dt.strftime("%Y-%m-%dT%H:%M:%S")
+        point = Point(latitude=lat,longitude=lon,depth=z,dt=dt_str)
+        # TODO need to create an reality for these not just VR
+        C = 35 # conductivity
+        T = 14 # temperaure
+        # Calculate pressure from depth (negative depth since it's below sea level)
+        pressure = gsw.p_from_z(z, 0)  # Z is negative for underwater depth, 0 is for sea level
+        # Calculate density of seawater using temperature, salinity, and pressure
+        # Absolute salinity and conservative temperature are used in TEOS-10
+        abs_salinity = gsw.SA_from_SP(C, pressure, lon, lat)  # Salinity in PSU
+        cons_temp = gsw.CT_from_t(abs_salinity, T, pressure)
+
+        # Now calculate the density
+        rho = gsw.rho(abs_salinity, cons_temp, pressure)
+
+        try:
+            water_depth = float(self.bathymetry_fun((lat, lon)))
+        except ValueError:
+            if self._print_warnings:
+                print("Could not get water depth. Setting waterdepth to 200")
+            self._print_warnings=False
+            water_depth = 200
+        if water_depth < 0:
+            logger.error(f"Waterdepth found to be negative ({water_depth}). It could be that the bathymetry is\n\tgiven with the opposite sign as expected.\n\tTry to reverse sign of glidersim.environts.NC_ELEVATION_FACTOR")
+            sys.exit()
+        if self.bathymetry_fun is None:
+            self.initialise_velocity_data(t, lat, lon)
+            self.read_bathymetry()
+        V = self.vr.teleport(point=point)
+        u = V.u_velocity
+        v = V.v_velocity
+
+        w = V.w_velocity
+        eta = 0
+        S = abs_salinity
+        return u, v, w, water_depth, eta, S, T, rho

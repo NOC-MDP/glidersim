@@ -18,9 +18,9 @@ glidersim.environments.GliderData.NC_LON_NAME='lon'
 glidersim.environments.GliderData.DBDREADER_CACHEDIR = 'data/cac'
 
 # Use current estimates from the BSH model, accessible via an online API:
-environment_model = glidersim.environments.DriftModel("comet", download_time=24,
+environment_model = glidersim.environments.VelocityRealityModel("comet", download_time=24,
 		                                      gliders_directory='data',
-						      bathymetry_filename='gebco_2023_n68.291_s39.5508_w-31.8604_e32.5635.nc')
+						      bathymetry_filename='gebco_2023_n75.0586_s25.4883_w-32.0801_e36.8262.nc')
 # Create a configuarion dictionary
 conf = glidersim.configuration.Config('mm1.mi',                # the mission name to run
                                       description="test",       # descriptive text used in the output file

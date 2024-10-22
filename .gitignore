@@ -10,3 +10,4 @@ build/
 .idea
 *.nc
 *.egg-info
+*.zarr

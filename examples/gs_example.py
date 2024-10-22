@@ -52,12 +52,12 @@ glidersim.environments.GliderData.DBDREADER_CACHEDIR = '../data/cac'
 if 1:
     # More realistic but takes some time to download current data.
     environment_model = glidersim.environments.DriftModel("comet", download_time=24,
-                                                          gliders_directory='../data', bathymetry_filename='../gebco_2023_n68.291_s39.5508_w-31.8604_e32.5635.nc')
+                                                          gliders_directory='../data', bathymetry_filename='../gebco_2023_n75.0586_s25.4883_w-32.0801_e36.8262.nc')
 else:
     # Just for testing. Current estimates are inaccurate.
     environment_model = glidersim.environments.GliderData("comet",
                                                           gliders_directory='../data',
-                                                          bathymetry_filename='../gebco_2023_n68.291_s39.5508_w-31.8604_e32.5635.nc')
+                                                          bathymetry_filename='../gebco_2023_n75.0586_s25.4883_w-32.0801_e36.8262.nc')
 
 #####################################################################################################
 #
