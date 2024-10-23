@@ -1,5 +1,5 @@
 from mamma_mia.velocity_world import VelocityReality, Extent,Point
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import json
 from urllib import request
@@ -298,25 +298,23 @@ class VelocityRealityModel(GliderData):
 
     def initialise_velocity_data(self, t, lat, lon):
         # TODO create VR reality here, (will also need Salinity and Temp)
-        split_bathy = self.bathymetry_filename.split("_")
-        # TODO this is pretty hacky need something more robust
-        for part in split_bathy:
-            if part[0] == 'n':
-                max_lat = float(part[1:])
-            if part[0] == 'e':
-                max_lon = float(part[1:-3])
-            if part[0] == 'w':
-                min_lon = float(part[1:])
-            if part[0] == 's':
-                min_lat = float(part[1:])
+        # TODO this is pretty hacky need something more robust excess also needs to be set dynamically somehow
+        dt = datetime.fromtimestamp(timestamp=t)
+        start_dt = (dt-timedelta(days=30)).strftime(format="%Y-%m-%dT%H:%M:%S")
+        end_dt = (dt+timedelta(days=30)).strftime(format="%Y-%m-%dT%H:%M:%S")
+        excess = 2
+        max_lat = lat + excess
+        min_lat = lat - excess
+        max_lon = lon + excess
+        min_lon = lon - excess
         max_depth = 500
         extent = Extent(max_lat=max_lat,
                         min_lat=min_lat,
                         min_lng=min_lon,
                         max_lng=max_lon,
                         max_depth=max_depth,
-                        start_dt="2019-07-01T00:00:00",
-                        end_dt="2019-09-01T00:00:00")
+                        start_dt=start_dt,
+                        end_dt=end_dt)
         self.vr = VelocityReality(extent=extent)
         pass
 
@@ -327,7 +325,7 @@ class VelocityRealityModel(GliderData):
             #self.read_gliderdata(t, lat, lon)
         dt = datetime.fromtimestamp(t)
         dt_str = dt.strftime("%Y-%m-%dT%H:%M:%S")
-        point = Point(latitude=lat,longitude=lon,depth=z,dt=dt_str)
+        point = Point(latitude=lat,longitude=lon,depth=-z,dt=dt_str)
         # TODO need to create an reality for these not just VR
         C = 35 # conductivity
         T = 14 # temperaure
@@ -351,9 +349,6 @@ class VelocityRealityModel(GliderData):
         if water_depth < 0:
             logger.error(f"Waterdepth found to be negative ({water_depth}). It could be that the bathymetry is\n\tgiven with the opposite sign as expected.\n\tTry to reverse sign of glidersim.environts.NC_ELEVATION_FACTOR")
             sys.exit()
-        if self.bathymetry_fun is None:
-            self.initialise_velocity_data(t, lat, lon)
-            self.read_bathymetry()
         V = self.vr.teleport(point=point)
         u = V.u_velocity
         v = V.v_velocity

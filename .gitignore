@@ -11,3 +11,4 @@ build/
 *.nc
 *.egg-info
 *.zarr
+*.dat
