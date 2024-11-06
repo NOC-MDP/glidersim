@@ -1,4 +1,4 @@
-from mamma_mia.velocity_world import VelocityReality, Extent,Point
+from mamma_mia.velocity_world import VelocityReality, Extent, Point, DensityReality
 from datetime import datetime, timedelta
 
 import json
@@ -45,11 +45,12 @@ from . import common
 
 logger = common.get_logger(name="environments")
 
+
 class GliderData(object):
-    ''' Class to compute environmental data based on glider data.
+    """ Class to compute environmental data based on glider data.
 
     Bathymetry data are from a netcdf file.
-    '''
+    """
     
     BATHYMETRY_FILENAME = '/home/thopri/glidersim/gebco_2023_n68.291_s39.5508_w-31.8604_e32.5635.nc'
     GLIDERS_DIRECTORY = '/home/thopri/glidersim/gliders'
@@ -74,16 +75,16 @@ class GliderData(object):
         self.ekman_depth = ekman_depth
         
     def reset(self):
-        '''
+        """
         Causes a reload of data
-        '''
+        """
         self.bathymetry_fun = None
         
     def read_bathymetry(self):
-        ''' Read bathymetry from a netcdf file
+        """ Read bathymetry from a netcdf file
 
         Sets self.bathymetry_fun
-        '''
+        """
         dataset = netCDF4.Dataset(self.bathymetry_filename, 'r', keepweakref=True)
         bathymetry = self.NC_ELEVATION_FACTOR * dataset.variables[self.NC_ELEVATION_NAME][...].copy()
         lat = dataset.variables[self.NC_LAT_NAME][...].copy()
@@ -290,14 +291,25 @@ class DriftModel(GliderData):
         ''' dowload drift data for this region and time '''
         self.u_fun, self.v_fun = self.download_drift_data(t, lat, lon)
 
-class VelocityRealityModel(GliderData):
+
+class MMRealityModel(GliderData):
 
     def __init__(self, glider_name, download_time=12, gliders_directory=None, bathymetry_filename=None):
         super().__init__(glider_name, gliders_directory, bathymetry_filename)
         self.vr = None
+        self.dr = None
         self.download_time = download_time
 
     def initialise_velocity_data(self, t, lat, lon,space=2,time=30):
+        """
+        create a velocity reality, (a velocity interpolator for the region of interest)
+        Args:
+            t: timestamp of start time
+            lat: latitude of starting location
+            lon: longitude of starting location
+            space: amount of space required around starting location (default 2.0 decimal degrees)
+            time: number of days to make the spatial extent (default +/- 30 days)
+        """
         dt = datetime.fromtimestamp(timestamp=t)
         start_dt = (dt-timedelta(days=time)).strftime(format="%Y-%m-%dT%H:%M:%S")
         end_dt = (dt+timedelta(days=time)).strftime(format="%Y-%m-%dT%H:%M:%S")
@@ -315,6 +327,7 @@ class VelocityRealityModel(GliderData):
                         start_dt=start_dt,
                         end_dt=end_dt)
         self.vr = VelocityReality(extent=extent)
+        self.dr = DensityReality(extent=extent)
 
     def get_data(self, t, lat, lon, z):
         if self.bathymetry_fun is None:
@@ -324,8 +337,9 @@ class VelocityRealityModel(GliderData):
         dt_str = dt.strftime("%Y-%m-%dT%H:%M:%S")
         point = Point(latitude=lat,longitude=lon,depth=z,dt=dt_str)
         # TODO need to create an reality for these not just velocities
-        C = 35 # conductivity
-        T = 14 # temperaure
+        D = self.dr.teleport(point=point)
+        C = D.salinity  # conductivity
+        T = D.temperature  # temperature
         # Calculate pressure from depth (negative depth since it's below sea level)
         pressure = gsw.p_from_z(z, 0)  # Z is negative for underwater depth, 0 is for sea level
         # Calculate density of seawater using temperature, salinity, and pressure

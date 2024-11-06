@@ -19,7 +19,7 @@ glidersim.environments.GliderData.NC_LON_NAME='lon'
 glidersim.environments.GliderData.DBDREADER_CACHEDIR = 'data/cac'
 
 # Use current estimates from the BSH model, accessible via an online API:
-environment_model = glidersim.environments.VelocityRealityModel("comet", download_time=24,
+environment_model = glidersim.environments.MMRealityModel("comet", download_time=24,
 		                                      gliders_directory='data',
 						      bathymetry_filename='gebco_2024_n73.3887_s48.6035_w-61.875_e-28.125.nc')
 ini_pos = latlon.convertToNmea(-43.54,59.48)
