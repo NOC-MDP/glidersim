@@ -294,19 +294,18 @@ class VelocityRealityModel(GliderData):
 
     def __init__(self, glider_name, download_time=12, gliders_directory=None, bathymetry_filename=None):
         super().__init__(glider_name, gliders_directory, bathymetry_filename)
+        self.vr = None
         self.download_time = download_time
 
-    def initialise_velocity_data(self, t, lat, lon):
-        # TODO create VR reality here, (will also need Salinity and Temp)
-        # TODO this is pretty hacky need something more robust excess also needs to be set dynamically somehow
+    def initialise_velocity_data(self, t, lat, lon,space=2,time=30):
         dt = datetime.fromtimestamp(timestamp=t)
-        start_dt = (dt-timedelta(days=30)).strftime(format="%Y-%m-%dT%H:%M:%S")
-        end_dt = (dt+timedelta(days=30)).strftime(format="%Y-%m-%dT%H:%M:%S")
-        excess = 2
-        max_lat = lat + excess
-        min_lat = lat - excess
-        max_lon = lon + excess
-        min_lon = lon - excess
+        start_dt = (dt-timedelta(days=time)).strftime(format="%Y-%m-%dT%H:%M:%S")
+        end_dt = (dt+timedelta(days=time)).strftime(format="%Y-%m-%dT%H:%M:%S")
+        extent_from_st = space # distance in decimal degrees to download of velocity worlds in each direction from starting location
+        max_lat = lat + extent_from_st
+        min_lat = lat - extent_from_st
+        max_lon = lon + extent_from_st
+        min_lon = lon - extent_from_st
         max_depth = 500
         extent = Extent(max_lat=max_lat,
                         min_lat=min_lat,
@@ -316,17 +315,15 @@ class VelocityRealityModel(GliderData):
                         start_dt=start_dt,
                         end_dt=end_dt)
         self.vr = VelocityReality(extent=extent)
-        pass
 
     def get_data(self, t, lat, lon, z):
         if self.bathymetry_fun is None:
             self.initialise_velocity_data(t, lat, lon)
             self.read_bathymetry()
-            #self.read_gliderdata(t, lat, lon)
         dt = datetime.fromtimestamp(t)
         dt_str = dt.strftime("%Y-%m-%dT%H:%M:%S")
-        point = Point(latitude=lat,longitude=lon,depth=-z,dt=dt_str)
-        # TODO need to create an reality for these not just VR
+        point = Point(latitude=lat,longitude=lon,depth=z,dt=dt_str)
+        # TODO need to create an reality for these not just velocities
         C = 35 # conductivity
         T = 14 # temperaure
         # Calculate pressure from depth (negative depth since it's below sea level)

@@ -1,6 +1,7 @@
 import glidersim
 import glidersim.configuration
 import glidersim.environments
+import latlon
 
 # Define a glider model. In this case a Slocum shallow 100 m.
 glider_model = glidersim.glidermodels.Shallow100mGliderModel()
@@ -20,18 +21,19 @@ glidersim.environments.GliderData.DBDREADER_CACHEDIR = 'data/cac'
 # Use current estimates from the BSH model, accessible via an online API:
 environment_model = glidersim.environments.VelocityRealityModel("comet", download_time=24,
 		                                      gliders_directory='data',
-						      bathymetry_filename='gebco_2023_n75.0586_s25.4883_w-32.0801_e36.8262.nc')
+						      bathymetry_filename='gebco_2024_n73.3887_s48.6035_w-61.875_e-28.125.nc')
+ini_pos = latlon.convertToNmea(-43.54,59.48)
 # Create a configuarion dictionary
 conf = glidersim.configuration.Config('mm1.mi',                # the mission name to run
                                       description="test",       # descriptive text used in the output file
-                                      datestr='20190821',       # start date of simulation
+                                      datestr='20200821',       # start date of simulation
                                       timestr='13:54',          # and time
-                                      lat_ini=4635.00,#5418.9674,
-                                      lon_ini=-710.00,#724.5902,     # starting longitude
+                                      lat_ini=ini_pos[1],#5418.9674,
+                                      lon_ini=ini_pos[0],#724.5902,     # starting longitude
                                       mission_directory='data/comet/mm1',  # where the missions and mafiles directories are found
-                                      output='comet-mm1.nc',             # name of output file (pickled files (.pck) can also be used
-                                      sensor_settings= dict(c_wpt_lat=4635.00,#5418.000,
-                                                            c_wpt_lon=-710.00,# 725.800,
+                                      output='comet-mm2.nc',             # name of output file (pickled files (.pck) can also be used
+                                      sensor_settings= dict(c_wpt_lat=ini_pos[1],#5418.000,
+                                                            c_wpt_lon=ini_pos[0],# 725.800,
                                                             m_water_vx=0.365,
                                                             m_water_vy=-0.099),
                                       special_settings={'glider.gps.acquiretime':100., # how long the GPS should take to get a reading
