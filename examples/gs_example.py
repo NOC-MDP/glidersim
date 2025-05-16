@@ -66,7 +66,7 @@ else:
 #####################################################################################################
 
 # A dictionary with general information on the simulation.
-conf = glidersim.configuration.Config('spiral.mi',
+conf = glidersim.configuration.Config('rapid-mooring.mi',
                                       description="test",
                                       datestr='20190809',
                                       timestr='15:20',

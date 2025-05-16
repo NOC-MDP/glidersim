@@ -1,4 +1,4 @@
-from mamma_mia.velocity_world import VelocityReality, Extent,Point
+from mamma_mia import Reality, WorldExtent,Point
 from datetime import datetime, timedelta
 
 import json
@@ -297,7 +297,6 @@ class VelocityRealityModel(GliderData):
         self.download_time = download_time
 
     def initialise_velocity_data(self, t, lat, lon):
-        # TODO create VR reality here, (will also need Salinity and Temp)
         # TODO this is pretty hacky need something more robust excess also needs to be set dynamically somehow
         dt = datetime.fromtimestamp(timestamp=t)
         start_dt = (dt-timedelta(days=30)).strftime(format="%Y-%m-%dT%H:%M:%S")
@@ -307,16 +306,17 @@ class VelocityRealityModel(GliderData):
         min_lat = lat - excess
         max_lon = lon + excess
         min_lon = lon - excess
-        max_depth = 500
-        extent = Extent(max_lat=max_lat,
-                        min_lat=min_lat,
-                        min_lng=min_lon,
-                        max_lng=max_lon,
-                        max_depth=max_depth,
-                        start_dt=start_dt,
-                        end_dt=end_dt)
-        self.vr = VelocityReality(extent=extent)
-        pass
+        # TODO need to set this dynamically somehow or at least from the calling python script
+        max_depth = 1250
+        extent = WorldExtent(lat_max=max_lat,
+                        lat_min=min_lat,
+                        lon_min=min_lon,
+                        lon_max=max_lon,
+                        depth_max=max_depth,
+                        time_start=start_dt,
+                        time_end=end_dt)
+        self.vr = Reality.for_glidersim(extent=extent)
+
 
     def get_data(self, t, lat, lon, z):
         if self.bathymetry_fun is None:
@@ -326,9 +326,10 @@ class VelocityRealityModel(GliderData):
         dt = datetime.fromtimestamp(t)
         dt_str = dt.strftime("%Y-%m-%dT%H:%M:%S")
         point = Point(latitude=lat,longitude=lon,depth=-z,dt=dt_str)
+        V = self.vr.teleport(point=point)
         # TODO need to create an reality for these not just VR
-        C = 35 # conductivity
-        T = 14 # temperaure
+        C = V.salinity # conductivity
+        T = V.temperature # temperaure
         # Calculate pressure from depth (negative depth since it's below sea level)
         pressure = gsw.p_from_z(z, 0)  # Z is negative for underwater depth, 0 is for sea level
         # Calculate density of seawater using temperature, salinity, and pressure
@@ -349,7 +350,7 @@ class VelocityRealityModel(GliderData):
         if water_depth < 0:
             logger.error(f"Waterdepth found to be negative ({water_depth}). It could be that the bathymetry is\n\tgiven with the opposite sign as expected.\n\tTry to reverse sign of glidersim.environts.NC_ELEVATION_FACTOR")
             sys.exit()
-        V = self.vr.teleport(point=point)
+
         u = V.u_velocity
         v = V.v_velocity
 

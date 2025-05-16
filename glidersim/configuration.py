@@ -20,7 +20,7 @@ class Config(object):
         self.lon_ini=lon_ini
         self.dt = dt
         self.rho0 = rho0
-        self.storePeriod=10
+        self.storePeriod=2
         self.mission_directory='experiment'
         self.mission_start='initial'
         self.output=None

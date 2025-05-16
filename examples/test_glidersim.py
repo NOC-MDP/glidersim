@@ -8,7 +8,7 @@ glidersim.getm.GetmEnvironment.Vname='northward_sea_water_velocity'
 glidersim.getm.GetmEnvironment.UseW=False
 
 
-conf = glidersim.configuration.Config('spiral.mi',
+conf = glidersim.configuration.Config('rapid-mooring.mi',
                                       description="test",
                                       datestr='20140730',
                                       timestr='16:06',
