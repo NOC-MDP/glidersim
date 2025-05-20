@@ -25,21 +25,21 @@ environment_model = glidersim.environments.VelocityRealityModel("comet", downloa
 # mooring eb1l2
 #lat = 23.8
 #lon = -24.142
-# mooring ebh4l2
-lat = 27.875
-lon = -13.51333
+# mooring ebh1
+lat = 27.2225
+lon = -15.4225
 Nmea_lon,Nmea_lat = latlon.convertToNmea(x=lon,y=lat)
 
 
 # Create a configuration dictionary
 conf = glidersim.configuration.Config('rapid-mooring.mi',                # the mission name to run
-                                      description="ebh4l2",       # descriptive text used in the output file
+                                      description="ebh2",       # descriptive text used in the output file
                                       datestr='20230303',       # start date of simulation
                                       timestr='12:00',          # and time
                                       lat_ini=Nmea_lat,#5418.9674,
                                       lon_ini=Nmea_lon,#724.5902,     # starting longitude
                                       mission_directory='data/RAPID-mooring',  # where the missions and mafiles directories are found
-                                      output='ebh412-mooring.nc',             # name of output file (pickled files (.pck) can also be used
+                                      output='ebh2-mooring.nc',             # name of output file (pickled files (.pck) can also be used
                                       sensor_settings= dict(c_wpt_lat=Nmea_lat,#5418.000,
                                                             c_wpt_lon=Nmea_lon,# 725.800,
                                                             m_water_vx=0.0,

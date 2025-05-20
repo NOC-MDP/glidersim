@@ -1,4 +1,4 @@
-from mamma_mia import Reality, WorldExtent,Point
+
 from datetime import datetime, timedelta
 
 import json
@@ -298,6 +298,7 @@ class VelocityRealityModel(GliderData):
 
     def initialise_velocity_data(self, t, lat, lon):
         # TODO this is pretty hacky need something more robust excess also needs to be set dynamically somehow
+        from mamma_mia import Reality, WorldExtent
         dt = datetime.fromtimestamp(timestamp=t)
         start_dt = (dt-timedelta(days=30)).strftime(format="%Y-%m-%dT%H:%M:%S")
         end_dt = (dt+timedelta(days=30)).strftime(format="%Y-%m-%dT%H:%M:%S")
@@ -319,6 +320,7 @@ class VelocityRealityModel(GliderData):
 
 
     def get_data(self, t, lat, lon, z):
+        from mamma_mia import Point
         if self.bathymetry_fun is None:
             self.initialise_velocity_data(t, lat, lon)
             self.read_bathymetry()
@@ -328,14 +330,15 @@ class VelocityRealityModel(GliderData):
         point = Point(latitude=lat,longitude=lon,depth=-z,dt=dt_str)
         V = self.vr.teleport(point=point)
         # TODO need to create an reality for these not just VR
-        C = V.salinity # conductivity
+        C = V.salinity # practical salinity
         T = V.temperature # temperaure
         # Calculate pressure from depth (negative depth since it's below sea level)
         pressure = gsw.p_from_z(z, 0)  # Z is negative for underwater depth, 0 is for sea level
         # Calculate density of seawater using temperature, salinity, and pressure
         # Absolute salinity and conservative temperature are used in TEOS-10
         abs_salinity = gsw.SA_from_SP(C, pressure, lon, lat)  # Salinity in PSU
-        cons_temp = gsw.CT_from_t(abs_salinity, T, pressure)
+        # calculate conservative temp from potential temperature and abs salinity
+        cons_temp = gsw.CT_from_pt(abs_salinity, T)
 
         # Now calculate the density
         rho = gsw.rho(abs_salinity, cons_temp, pressure)
