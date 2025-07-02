@@ -330,8 +330,8 @@ class VelocityRealityModel(GliderData):
         point = Point(latitude=lat,longitude=lon,depth=-z,dt=dt_str)
         V = self.vr.teleport(point=point)
         # TODO need to create an reality for these not just VR
-        C = V.salinity # practical salinity
-        T = V.temperature # temperaure
+        C = V.practical_salinity
+        T = V.potential_temperature
         # Calculate pressure from depth (negative depth since it's below sea level)
         pressure = gsw.p_from_z(z, 0)  # Z is negative for underwater depth, 0 is for sea level
         # Calculate density of seawater using temperature, salinity, and pressure
