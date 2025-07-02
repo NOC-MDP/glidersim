@@ -59,7 +59,7 @@ behavior: surface
     b_arg: args_from_file(enum)     10  # read from mafiles/surfac10.ma
 
 #behavior: set_heading
-#    b_arg: use_heading(bool) 4 # in, 1 HM_HEADING
+#   b_arg: use_heading(bool) 4 # in, 1 HM_HEADING
 #                               # in, 2 HM_ROLL
 #                               # in, 3 HM_BATTROLL
 #                               # in, 4 HM_FIN

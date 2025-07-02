@@ -1043,7 +1043,7 @@ class Goto_list(WhenBehavior):
         dist=sqrt((x0-x1)**2+(y0-y1)**2)
         self.gliderState['m_dist_to_wpt']=dist
         CLRS.w("distance to waypoint: %f"%(dist))
-        #print(dist, self.gliderState['c_heading'], self.gliderState['c_wpt_lat'], self.gliderState['c_wpt_lon'])
+        #print(dist, self.gliderState['c_heading'], self.gliderState['c_wpt_lat'], self.gliderState['c_wpt_lon'],self.gliderState["m_depth"])
         if self.list_stop_when==7 and dist<=self.list_when_wpt_dist:
             self.achievedWaypoints+=1
             self.gliderState['x_last_wpt_lat']=self.waypoints[r][1]

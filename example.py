@@ -61,6 +61,6 @@ GM.loadmission(verbose=True)
 # is set to 4 seconds. We simulate only 7 hours, and show some
 # diagnostic output.
 #GM.run(dt=0.5,CPUcycle=4,maxSimulationTime=12/24, end_on_surfacing=False, verbose=True)
-GM.run(dt=0.5,CPUcycle=4,maxSimulationTime=1, end_on_surfacing=False, verbose=True)
+GM.run(dt=0.5,CPUcycle=4,maxSimulationTime=7, end_on_surfacing=False, verbose=True)
 # Save the results in a file for later analysis
 GM.save()
