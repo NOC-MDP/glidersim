@@ -1,4 +1,4 @@
-numpy<=1.26.4
+numpy>=1.26.4
 arrow>=0.17
 scipy>=1.5.4
 gliderflight>=1.1.0
