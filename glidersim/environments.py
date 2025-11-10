@@ -292,9 +292,11 @@ class DriftModel(GliderData):
 
 class VelocityRealityModel(GliderData):
 
-    def __init__(self, glider_name, download_time=12, gliders_directory=None, bathymetry_filename=None):
+    def __init__(self, glider_name, download_time=12, gliders_directory=None, bathymetry_filename=None,env_source="MSM"):
         super().__init__(glider_name, gliders_directory, bathymetry_filename)
         self.download_time = download_time
+        self.env_source = env_source
+        self.vr = None
 
     def initialise_velocity_data(self, t, lat, lon):
         # TODO this is pretty hacky need something more robust excess also needs to be set dynamically somehow
@@ -316,7 +318,7 @@ class VelocityRealityModel(GliderData):
                         depth_max=max_depth,
                         time_start=start_dt,
                         time_end=end_dt)
-        self.vr = Reality.for_glidersim(extent=extent)
+        self.vr = Reality.for_glidersim(extent=extent,env_source=self.env_source)
 
 
     def get_data(self, t, lat, lon, z):
